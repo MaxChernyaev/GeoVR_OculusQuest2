@@ -32,8 +32,8 @@ public class ARSceneMakingManager : MonoBehaviour
     // [SerializeField] private GameObject DeleteObjPrefab;
     // private Vector3 point; // точка перечения луча и плоскости
     [SerializeField] private Text TextLog;  // лог на VRcanvas
-    [SerializeField] private GameObject CanvasMenu;
-    private bool CanvasMenuActive = false;
+    [SerializeField] public GameObject CanvasMenu;
+    public bool CanvasMenuActive = false;
     private string SummTextLog;
 
     // private ARTrackedImageManager myARTrackedImageManager; // чтобы выключать/выключать компонент ARTrackedImageManager

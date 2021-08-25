@@ -267,6 +267,11 @@ public class VRButton : MonoBehaviour
 
     public void SaveScreenshot()
     {
+
+        GameObject.Find("XR Rig").GetComponent<ARSceneMakingManager>().CanvasMenuActive = !GameObject.Find("XR Rig").GetComponent<ARSceneMakingManager>().CanvasMenuActive;
+        GameObject.Find("XR Rig").GetComponent<ARSceneMakingManager>().CanvasMenu.SetActive(GameObject.Find("XR Rig").GetComponent<ARSceneMakingManager>().CanvasMenuActive);
+        GameObject.Find("XR Rig").GetComponent<ARSceneMakingManager>().StartCoroutine("Button_BAN_05sec");
+
         StartCoroutine(TimerScreenshotCoroutine());
     }
 
@@ -282,6 +287,10 @@ public class VRButton : MonoBehaviour
         yield return new WaitForSeconds(1f);
         textPanel.GetComponent<Text>().text = "1";
         yield return new WaitForSeconds(1f);
+        textPanel.GetComponent<Text>().fontSize = 50;
+        textPanel.GetComponent<Text>().text = "вспышка";
+        yield return new WaitForSeconds(1f);
+        textPanel.GetComponent<Text>().fontSize = 300;
         textPanel.GetComponent<Text>().text = "";
         //ScreenCapture.CaptureScreenshot(Application.persistentDataPath  + "/" + "Saved Radarograms" + "/" + myJsonRadarogramData.id + "/" + System.DateTime.Now.ToString());
         ScreenCapture.CaptureScreenshot("NewScreenshot.png");

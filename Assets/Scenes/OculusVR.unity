@@ -1107,6 +1107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TextLog: {fileID: 0}
   CanvasMenu: {fileID: 0}
+  CanvasMenuActive: 0
   radarogramPrefab: {fileID: 0}
   InputFieldIP: {fileID: 0}
   teststring: data.json
@@ -3130,7 +3131,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 342124966}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 359d48ace17c1160bb066df0adee29c2, type: 3}
   m_Name: 
@@ -4358,6 +4359,7 @@ GameObject:
   - component: {fileID: 682874408}
   - component: {fileID: 682874407}
   - component: {fileID: 682874406}
+  - component: {fileID: 682874405}
   m_Layer: 5
   m_Name: CanvasTimer
   m_TagString: Untagged
@@ -4365,6 +4367,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &682874405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682874404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24aea8a97b1991396ac1e963b03001c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textPanel: {fileID: 1735068476}
+  SetActiveButton: {fileID: 0}
+  buttonActive: 0
 --- !u!114 &682874406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6895,7 +6912,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1062884228
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10378,6 +10395,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TextLog: {fileID: 890361772}
   CanvasMenu: {fileID: 342124966}
+  CanvasMenuActive: 0
   radarogramPrefab: {fileID: 5069979674414969168, guid: 22635ebbe4ca2c1b59db66bcde3d462f, type: 3}
   InputFieldIP: {fileID: 1706890090}
   teststring: data.json
@@ -10512,7 +10530,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1620858398}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24aea8a97b1991396ac1e963b03001c5, type: 3}
   m_Name: 
@@ -10564,7 +10582,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1620858400}
+      - m_Target: {fileID: 682874405}
         m_TargetAssemblyTypeName: VRButton, Assembly-CSharp
         m_MethodName: SaveScreenshot
         m_Mode: 1
