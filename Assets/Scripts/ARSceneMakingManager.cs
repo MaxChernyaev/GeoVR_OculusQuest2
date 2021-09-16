@@ -93,76 +93,13 @@ public class ARSceneMakingManager : MonoBehaviour
         List<GameObject> RGList = new List<GameObject>(); // список радарограмм
 
 
-    GameObject FirstObg_1;
-    Vector3 FirstPosition_1;
-    GameObject SecondObg_1;
-    Vector3 SecondPosition_1;
-    GameObject FirstObg_2;
-    Vector3 FirstPosition_2;
-    GameObject SecondObg_2;
-    Vector3 SecondPosition_2;
-    GameObject FirstObg_3;
-    Vector3 FirstPosition_3;
-    GameObject SecondObg_3;
-    Vector3 SecondPosition_3;
-    GameObject FirstObg_4;
-    Vector3 FirstPosition_4;
-    GameObject SecondObg_4;
-    Vector3 SecondPosition_4;
-    GameObject FirstObg_5;
-    Vector3 FirstPosition_5;
-    GameObject SecondObg_5;
-    Vector3 SecondPosition_5;
-    GameObject FirstObg_6;
-    Vector3 FirstPosition_6;
-    GameObject SecondObg_6;
-    Vector3 SecondPosition_6;
-    GameObject FirstObg_7;
-    Vector3 FirstPosition_7;
-    GameObject SecondObg_7;
-    Vector3 SecondPosition_7;
-    GameObject FirstObg_8;
-    Vector3 FirstPosition_8;
-    GameObject SecondObg_8;
-    Vector3 SecondPosition_8;
-    GameObject FirstObg_9;
-    Vector3 FirstPosition_9;
-    GameObject SecondObg_9;
-    Vector3 SecondPosition_9;
-    GameObject FirstObg_10;
-    Vector3 FirstPosition_10;
-    GameObject SecondObg_10;
-    Vector3 SecondPosition_10;
-    GameObject RG_1;
-    GameObject RG_2;
-    GameObject RG_3;
-    GameObject RG_4;
-    GameObject RG_5;
-    GameObject RG_6;
-    GameObject RG_7;
-    GameObject RG_8;
-    GameObject RG_9;
-    GameObject RG_10;
-    Vector3 normalizedDirection_1;
-    Vector3 normalizedDirection_2;
-    Vector3 normalizedDirection_3;
-    Vector3 normalizedDirection_4;
-    Vector3 normalizedDirection_5;
-    Vector3 normalizedDirection_6;
-    Vector3 normalizedDirection_7;
-    Vector3 normalizedDirection_8;
-    Vector3 normalizedDirection_9;
-    Vector3 normalizedDirection_10;
-    Vector3 MyCenter_1;
-    Vector3 MyCenter_2;
-    Vector3 MyCenter_3;
-    Vector3 MyCenter_4;
-    Vector3 MyCenter_5;
-    Vector3 MyCenter_6;
-    Vector3 MyCenter_7;
-    Vector3 MyCenter_8;
-    Vector3 MyCenter_9;
-    Vector3 MyCenter_10;
+    GameObject FirstObg_1, FirstObg_2, FirstObg_3, FirstObg_4, FirstObg_5, FirstObg_6, FirstObg_7, FirstObg_8, FirstObg_9, FirstObg_10;
+    Vector3 FirstPosition_1, FirstPosition_2, FirstPosition_3, FirstPosition_4, FirstPosition_5, FirstPosition_6, FirstPosition_7, FirstPosition_8, FirstPosition_9, FirstPosition_10;
+    GameObject SecondObg_1, SecondObg_2, SecondObg_3, SecondObg_4, SecondObg_5, SecondObg_6, SecondObg_7, SecondObg_8, SecondObg_9, SecondObg_10;
+    Vector3 SecondPosition_1, SecondPosition_2, SecondPosition_3, SecondPosition_4, SecondPosition_5, SecondPosition_6, SecondPosition_7, SecondPosition_8, SecondPosition_9, SecondPosition_10;
+    GameObject RG_1, RG_2, RG_3, RG_4, RG_5, RG_6, RG_7, RG_8, RG_9, RG_10;
+    Vector3 normalizedDirection_1, normalizedDirection_2, normalizedDirection_3, normalizedDirection_4, normalizedDirection_5, normalizedDirection_6, normalizedDirection_7, normalizedDirection_8, normalizedDirection_9, normalizedDirection_10;
+    Vector3 MyCenter_1, MyCenter_2, MyCenter_3, MyCenter_4, MyCenter_5, MyCenter_6, MyCenter_7, MyCenter_8, MyCenter_9, MyCenter_10;
     UnityEngine.XR.InputDevice RightDevice;
     UnityEngine.XR.InputDevice LeftDevice;
     [SerializeField] private GameObject InputFieldIP;
@@ -746,19 +683,34 @@ public class ARSceneMakingManager : MonoBehaviour
         //TextLog.text = inputTextIP;
         CustomWebServerIP = inputTextIP;
     }
+    public void ENDInputVRKeyboard_NameIP()
+    {
+        //TextLog.text = inputTextIP;
+        GameObject.Find("SaveIPToJSON").GetComponent<AddNewIP>().inputNameIP.text = inputTextIP;
+    }
+    public void ENDInputVRKeyboard_IPAddress()
+    {
+        //TextLog.text = inputTextIP;
+        GameObject.Find("SaveIPToJSON").GetComponent<AddNewIP>().inputIPAddress.text = inputTextIP;
+    }
 
     public void RestartWithNewIP()
     {
         InputFieldIP.SetActive(false);
         //GameObject.Find("HideRadarogram1").GetComponent<VRButton>().buttonActive = false;
-        WebServerIP = "http://" + CustomWebServerIP + ":8000";
+        //WebServerIP = "http://" + CustomWebServerIP + ":8000";
+        WebServerIP = "http://" + GameObject.Find("Dropdown").GetComponent<DropDownMenu>().selectItem.text + ":8000";
+        GameObject.Find("Main Camera").GetComponent<VRButton>().MainCanvas.SetActive(false); // закрываем оба канваса
+        GameObject.Find("Main Camera").GetComponent<VRButton>().SetActiveButton.SetActive(false); // закрываем оба канваса
         StartCoroutine(NewIPCoroutine());
         Init();
     }
 
     IEnumerator NewIPCoroutine()
     {
-        TextLog.text = "Подключаюсь к Ryven серверу по новому IP: " + CustomWebServerIP;
+        //TextLog.text = "Подключаюсь к Ryven серверу по новому IP: " + CustomWebServerIP;
+        //TextLog.text = "Подключаюсь к Ryven серверу по новому IP: " + GameObject.Find("Dropdown").GetComponent<DropDownMenu>().selectItem.text;
+        TextLog.text = "Подключаюсь к Ryven серверу по адресу: " + WebServerIP;
         yield return new WaitForSeconds(3f);
         TextLog.text  = "";
     }

@@ -6,16 +6,7 @@ using System.IO;
 
 public class VRButton : MonoBehaviour
 {
-    GameObject RG1;
-    GameObject RG2;
-    GameObject RG3;
-    GameObject RG4;
-    GameObject RG5;
-    GameObject RG6;
-    GameObject RG7;
-    GameObject RG8;
-    GameObject RG9;
-    GameObject RG10;
+    GameObject RG1, RG2, RG3, RG4, RG5, RG6, RG7, RG8, RG9, RG10;
 
     private bool RG1Active = true;
     private bool RG2Active = true;
@@ -31,12 +22,15 @@ public class VRButton : MonoBehaviour
     JsonRadarogramReader.CommonData myJsonRadarogramData;
     [SerializeField] private GameObject textPanel;
 
-    [SerializeField] private GameObject SetActiveButton;
+    [SerializeField] public GameObject SetActiveButton;
+    [SerializeField] public GameObject MainCanvas;
 
     public bool buttonActive = false;
     void Start()
     {
         //FindRadarogram();
+        MainCanvas.SetActive(false);
+        SetActiveButton.SetActive(false);
     }
 
     // Update is called once per frame
@@ -238,8 +232,11 @@ public class VRButton : MonoBehaviour
 
     public void ChangeIP()
     {
-        SetActiveButton.SetActive(!buttonActive);
+        // если доп. канвас с выбором IP открылся, то основной закрылся. И наоборот
         buttonActive = !buttonActive;
+        SetActiveButton.SetActive(buttonActive);
+        MainCanvas.SetActive(!buttonActive);
+        GameObject.Find("Dropdown").GetComponent<DropDownMenu>().UpdateDropDown(); // обновляю выпадающий список
     }
 
     public void SaveScene()
