@@ -114,7 +114,8 @@ public class ARSceneMakingManager : MonoBehaviour
     private bool RadarogramWereFound = false;
 
     private int RadarogramCounter = 0;
-    private string WebServerIP = "http://192.168.110.33:8000";
+    private string WebServerIP;
+    //private string WebServerIP = "http://192.168.110.33:8000";
     //private string WebServerIP = "http://192.168.137.1:8000";
     //private string WebServerIP = "http://192.168.31.8:8000";
     private bool FlagSuccessfulConnect = false;
@@ -124,6 +125,8 @@ public class ARSceneMakingManager : MonoBehaviour
     public static string inputTextIP = "";
 
     private int frames = 0;
+
+    bool toggleDestroyScene; // значение toggle удаляем или оставляем прошлую сцену при загрузке новой
 
     [SerializeField] private string teststring = "data.json";
     private string FULLteststring;
@@ -141,24 +144,52 @@ public class ARSceneMakingManager : MonoBehaviour
 
     public void Init()
     {
+        FlagSuccessfulConnect = false;
+
         webClient.DownloadFile(WebServerIP + "/scene.json", Application.persistentDataPath + "/scene.json"); // скачиваю новый scene.json
-        GameObject.Find("scripts").GetComponent<ObjectManager>().LoadButton(); // Загружаю сцену из файла scene.json
+
+        StartCoroutine("LoadSceneCoroutine");
+        ////////////// GameObject.Find("scripts").GetComponent<ObjectManager>().LoadButton(); // Загружаю сцену из файла scene.json
+
         Directory.CreateDirectory(Application.persistentDataPath + "/RadarogramTexture");
 
         if(File.Exists(Application.persistentDataPath + "/data.json"))
         {
             // DATA.JSON найден!
-            File.Delete(newSaveDataPath);
+            // SummTextLog += "+ ";
+            // TextLog.text = SummTextLog;
+
+            //File.Delete(newSaveDataPath);                                         // зачем делать так?
+            File.Delete(Path.Combine(Application.persistentDataPath, teststring));  // если можно так?
+            lastTime = 0;
+            // SummTextLog += "del ";
+            // TextLog.text = SummTextLog;
+            // if(File.Exists(Application.persistentDataPath + "/data.json"))
+            // {
+            //     SummTextLog += "++ ";
+            //     TextLog.text = SummTextLog;
+            // }
+            // else
+            // {
+            //     SummTextLog += "-- ";
+            //     TextLog.text = SummTextLog;
+            // }
+
             //myJsonRadarogramData = GameObject.Find("scripts").GetComponent<ObjectManager>().LoadDataJson(); // Читаю data.json
         }
+        // else
+        // {
+        //     SummTextLog += "- ";
+        //     TextLog.text = SummTextLog;
+        // }
         // Debug.Log(myJsonRadarogramData.time);
         // Debug.Log(myJsonRadarogramData.images.jpg1[0]);
 
-        // Ищу основные объекты на сцене
-        FindWhiteFlag();
+        ////////////// // Ищу основные объекты на сцене
+        ////////////// FindWhiteFlag();
         
-        // Ставлю заготовки под радарограммы, которые потом можно текстурировать
-        InstallBlank();
+        ////////////// // Ставлю заготовки под радарограммы, которые потом можно текстурировать
+        ////////////// InstallBlank();
     }
 
     void Start()
@@ -170,7 +201,7 @@ public class ARSceneMakingManager : MonoBehaviour
             RGActiveArray[i] = true;
         }
 
-        Init();
+        //Init();
     }
 
     void Update()
@@ -179,8 +210,6 @@ public class ARSceneMakingManager : MonoBehaviour
 
         if (FlagSuccessfulConnect)
         {
-            //SummTextLog += "Пытаюсь поставить радарограммы";
-            //TextLog.text = SummTextLog;
             InstallRadarogram(); // установка радарограмм, скачанных с Ryven web-сервера
         }
 
@@ -507,20 +536,24 @@ public class ARSceneMakingManager : MonoBehaviour
                 // try
                 // {
                     lastTime = myJsonRadarogramData.time;            // запоминаю какое время было в прошлом data.json файле
-                    //SummTextLog += " data+ ";
-                    //TextLog.text = SummTextLog;
+                    // SummTextLog += " data+ ";
+                    // TextLog.text = SummTextLog;
                 // }
                 // catch(Exception e)
                 // {
                 //     print("Exception thrown " + e.Message);
                 // }
             }
+            else
+            {
+                lastTime = 0;
+            }
             // try
             // {
 
             webClient.DownloadFileAsync(new Uri(WebServerIP + "/data.json"), Application.persistentDataPath + "/data.json"); // скачиваю новый data.json
-            //SummTextLog += " Async ";
-            //TextLog.text = SummTextLog;
+            // SummTextLog += " Async ";
+            // TextLog.text = SummTextLog;
         }
         if(frames == 30)
         {
@@ -533,16 +566,18 @@ public class ARSceneMakingManager : MonoBehaviour
             //myJsonRadarogramData = GameObject.Find("scripts").GetComponent<ObjectManager>().LoadDataJson(); // Читаю data.json
             if(File.Exists(Application.persistentDataPath + "/data.json"))
             {   
-                //SummTextLog += " DC ";
-                //TextLog.text = SummTextLog;
+                // SummTextLog += " DC ";
+                // TextLog.text = SummTextLog;
                 myJsonRadarogramData = GameObject.Find("scripts").GetComponent<ObjectManager>().LoadDataJson(); // Читаю data.json
-                //SummTextLog += " ReadD ";
-                //TextLog.text = SummTextLog;
+                // SummTextLog += " ReadD ";
+                // TextLog.text = SummTextLog;
 
                 if(myJsonRadarogramData.time != lastTime) // Если прилетели новые радарограммы
                 {
-                    //SummTextLog += " NR ";
-                    //TextLog.text = SummTextLog;
+                    // SummTextLog += " NR ";
+                    // TextLog.text = SummTextLog;
+
+                    //StartCoroutine(LoadRadarogramTextLogCoroutine());
                     
                     try
                     {
@@ -696,21 +731,52 @@ public class ARSceneMakingManager : MonoBehaviour
 
     public void RestartWithNewIP()
     {
+        TextLog.text  = "";
+        SummTextLog = "";
         InputFieldIP.SetActive(false);
-        //GameObject.Find("HideRadarogram1").GetComponent<VRButton>().buttonActive = false;
-        //WebServerIP = "http://" + CustomWebServerIP + ":8000";
         WebServerIP = "http://" + GameObject.Find("Dropdown").GetComponent<DropDownMenu>().selectItem.text + ":8000";
+        toggleDestroyScene = GameObject.Find("ToggleDestroyScene").GetComponent<Toggle>().isOn; // true - если удаляем прошлую сцену, false - оставляем
         GameObject.Find("Main Camera").GetComponent<VRButton>().MainCanvas.SetActive(false); // закрываем оба канваса
         GameObject.Find("Main Camera").GetComponent<VRButton>().SetActiveButton.SetActive(false); // закрываем оба канваса
-        StartCoroutine(NewIPCoroutine());
+
+        StartCoroutine("NewIPCoroutine");
+
+        StartCoroutine("RestartWithNewIP_coroutine");
+
+        // Init();
+    }
+
+    IEnumerator RestartWithNewIP_coroutine()
+    {
+        FlagSuccessfulConnect = false;
+        yield return new WaitForSeconds(1f);
+        if (toggleDestroyScene)
+        {
+            GameObject.Find("BasePlane(Clone)").GetComponent<DestroyScene>().DestroySceneButton(); // удаляем прошлую сцену
+        }
+        yield return new WaitForSeconds(1f);
         Init();
+        yield return new WaitForSeconds(1f);
+    }
+
+    public void DeleteSceneButton()
+    {
+        GameObject.Find("BasePlane(Clone)").GetComponent<DestroyScene>().DestroySceneButton(); // удаляем прошлую сцену
     }
 
     IEnumerator NewIPCoroutine()
     {
         //TextLog.text = "Подключаюсь к Ryven серверу по новому IP: " + CustomWebServerIP;
         //TextLog.text = "Подключаюсь к Ryven серверу по новому IP: " + GameObject.Find("Dropdown").GetComponent<DropDownMenu>().selectItem.text;
-        TextLog.text = "Подключаюсь к Ryven серверу по адресу: " + WebServerIP;
+        SummTextLog += "Подключаюсь к Ryven серверу по адресу: " + WebServerIP;
+        TextLog.text = SummTextLog;
+        yield return new WaitForSeconds(3f);
+        TextLog.text  = "";
+    }
+
+    IEnumerator LoadRadarogramTextLogCoroutine()
+    {
+        TextLog.text = "Качаю радарограммы";
         yield return new WaitForSeconds(3f);
         TextLog.text  = "";
     }
@@ -817,6 +883,19 @@ public class ARSceneMakingManager : MonoBehaviour
         button_ban = true;
         yield return new WaitForSeconds(0.3f);
         button_ban = false;
+    }
+
+    IEnumerator LoadSceneCoroutine()
+    {
+        yield return new WaitForSeconds(1f);
+        GameObject.Find("scripts").GetComponent<ObjectManager>().LoadButton(); // Загружаю сцену из файла scene.json
+        yield return new WaitForSeconds(0.1f);
+        // Ищу основные объекты на сцене
+        FindWhiteFlag();
+        yield return new WaitForSeconds(0.1f);
+        // Ставлю заготовки под радарограммы, которые потом можно текстурировать
+        InstallBlank();
+
     }
 
     private void FindRadarogram()
