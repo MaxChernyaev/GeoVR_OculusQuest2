@@ -31,7 +31,7 @@ public class ARSceneMakingManager : MonoBehaviour
     // [SerializeField] private GameObject HatchwayPrefab;
     // [SerializeField] private GameObject DeleteObjPrefab;
     // private Vector3 point; // точка перечения луча и плоскости
-    [SerializeField] private Text TextLog;  // лог на VRcanvas
+    [SerializeField] public Text TextLog;  // лог на VRcanvas
     [SerializeField] public GameObject CanvasMenu;
     public bool CanvasMenuActive = false;
     private string SummTextLog;
@@ -78,7 +78,7 @@ public class ARSceneMakingManager : MonoBehaviour
 
     //[SerializeField] private ObjectManager ObjectManagerScript;
     WebClient webClient = new WebClient();
-    JsonRadarogramReader.CommonData myJsonRadarogramData;
+    public JsonRadarogramReader.CommonData myJsonRadarogramData;
     private double lastTime;
 
     // private int WhiteFlagNum1 = 0;
@@ -104,15 +104,19 @@ public class ARSceneMakingManager : MonoBehaviour
     UnityEngine.XR.InputDevice LeftDevice;
     [SerializeField] private GameObject InputFieldIP;
     private bool button_ban = false;
-
+    
     // массив самих объектов - радарограмм
     private GameObject[] RGArray = new GameObject[11]; // используется с 1 до 10
+
     // массив флагов активности радарограмм
-    private bool[] RGActiveArray = new bool[11]; // используется с 1 до 10
+    public bool[] RGActiveArray = new bool[11]; // используется с 1 до 10
 
     // флаг, указывающий на то, что радарограммы были найдены
     private bool RadarogramWereFound = false;
 
+    // объект VRButton, управляющий скрытием радарограмм + кнопками на канвасе
+    private VRButton VRButton;
+    private GameObject[] TextHR;
     private int RadarogramCounter = 0;
     private string WebServerIP;
     //private string WebServerIP = "http://192.168.110.33:8000";
@@ -127,6 +131,9 @@ public class ARSceneMakingManager : MonoBehaviour
     private int frames = 0;
 
     bool toggleDestroyScene; // значение toggle удаляем или оставляем прошлую сцену при загрузке новой
+
+    public List<int> hiddenRadarograms = new List<int>();
+
 
     [SerializeField] private string teststring = "data.json";
     private string FULLteststring;
@@ -194,12 +201,14 @@ public class ARSceneMakingManager : MonoBehaviour
 
     void Start()
     {   
+        VRButton = GameObject.Find("Main Camera").GetComponent<VRButton>();
+        TextHR = VRButton.TextHR;
         CanvasMenu.SetActive(false);
 
-        for(int i = 1; i < 11; i++)
-        {
-            RGActiveArray[i] = true;
-        }
+        // for(int i = 1; i < 11; i++)
+        // {
+        //     RGActiveArray[i] = true;
+        // }
 
         //Init();
     }
@@ -212,6 +221,8 @@ public class ARSceneMakingManager : MonoBehaviour
         {
             InstallRadarogram(); // установка радарограмм, скачанных с Ryven web-сервера
         }
+
+        if(RadarogramWereFound == false) FindRadarogram();
 
         // ДЛЯ ПРОВЕДЕНИЯ ЛИНИЙ МЕЖДУ ОБЪЕКТАМИ
         // если найдены 2 границы из красных флагов
@@ -606,6 +617,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_1.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/0.png");
                     RG_1.transform.position += new Vector3(0, 1.5f, 0);
                     RG_1.name = "radarogramPrefab_1";
+                    RG_1.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg0[0]/100, (float)myJsonRadarogramData.images.jpg0[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_2 = FirstPosition_2 + (normalizedDirection_2 * myJsonRadarogramData.images.jpg1[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_2.transform.position = SecondPosition_2; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -614,6 +626,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_2.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/1.png");
                     RG_2.transform.position += new Vector3(0, 1.5f, 0);
                     RG_2.name = "radarogramPrefab_2";
+                    RG_2.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg1[0]/100, (float)myJsonRadarogramData.images.jpg1[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_3 = FirstPosition_3 + (normalizedDirection_3 * myJsonRadarogramData.images.jpg2[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_3.transform.position = SecondPosition_3; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -622,6 +635,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_3.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/2.png");
                     RG_3.transform.position += new Vector3(0, 1.5f, 0);
                     RG_3.name = "radarogramPrefab_3";
+                    RG_3.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg2[0]/100, (float)myJsonRadarogramData.images.jpg2[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_4 = FirstPosition_4 + (normalizedDirection_4 * myJsonRadarogramData.images.jpg3[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_4.transform.position = SecondPosition_4; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -630,6 +644,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_4.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/3.png");
                     RG_4.transform.position += new Vector3(0, 1.5f, 0);
                     RG_4.name = "radarogramPrefab_4";
+                    RG_4.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg3[0]/100, (float)myJsonRadarogramData.images.jpg3[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_5 = FirstPosition_5 + (normalizedDirection_5 * myJsonRadarogramData.images.jpg4[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_5.transform.position = SecondPosition_5; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -638,6 +653,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_5.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/4.png");
                     RG_5.transform.position += new Vector3(0, 1.5f, 0);
                     RG_5.name = "radarogramPrefab_5";
+                    RG_5.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg4[0]/100, (float)myJsonRadarogramData.images.jpg4[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_6 = FirstPosition_6 + (normalizedDirection_6 * myJsonRadarogramData.images.jpg5[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_6.transform.position = SecondPosition_6; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -646,6 +662,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_6.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/5.png");
                     RG_6.transform.position += new Vector3(0, 1.5f, 0);
                     RG_6.name = "radarogramPrefab_6";
+                    RG_6.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg5[0]/100, (float)myJsonRadarogramData.images.jpg5[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_7 = FirstPosition_7 + (normalizedDirection_7 * myJsonRadarogramData.images.jpg6[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_7.transform.position = SecondPosition_7; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -654,6 +671,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_7.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/6.png");
                     RG_7.transform.position += new Vector3(0, 1.5f, 0);
                     RG_7.name = "radarogramPrefab_7";
+                    RG_7.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg6[0]/100, (float)myJsonRadarogramData.images.jpg6[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_8 = FirstPosition_8 + (normalizedDirection_8 * myJsonRadarogramData.images.jpg7[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_8.transform.position = SecondPosition_8; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -662,6 +680,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_8.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/7.png");
                     RG_8.transform.position += new Vector3(0, 1.5f, 0);
                     RG_8.name = "radarogramPrefab_8";
+                    RG_8.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg7[0]/100, (float)myJsonRadarogramData.images.jpg7[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_9 = FirstPosition_9 + (normalizedDirection_9 * myJsonRadarogramData.images.jpg8[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_9.transform.position = SecondPosition_9; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -670,6 +689,7 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_9.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/8.png");
                     RG_9.transform.position += new Vector3(0, 1.5f, 0);
                     RG_9.name = "radarogramPrefab_9";
+                    RG_9.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg8[0]/100, (float)myJsonRadarogramData.images.jpg8[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
 
                     SecondPosition_10 = FirstPosition_10 + (normalizedDirection_10 * myJsonRadarogramData.images.jpg9[0]/100); // умножается на количество метров (длина радарограммы). Делю на 100, потому что сейчас 100 пикселей на метр
                     SecondObg_10.transform.position = SecondPosition_10; // отодвигаем второй белый флаг, чтобы влезла радарограмма
@@ -678,6 +698,8 @@ public class ARSceneMakingManager : MonoBehaviour
                     RG_10.GetComponent<SpriteRenderer>().sprite = LoadSprite(Application.persistentDataPath + "/RadarogramTexture/9.png");
                     RG_10.transform.position += new Vector3(0, 1.5f, 0);
                     RG_10.name = "radarogramPrefab_10";
+                    RG_10.GetComponent<BoxCollider>().size = new Vector3((float)myJsonRadarogramData.images.jpg9[0]/100, (float)myJsonRadarogramData.images.jpg9[1]/100, 0.01f); // растягиваем коллайдер по размеру изображения
+                
                 }
             }
         }
@@ -737,7 +759,7 @@ public class ARSceneMakingManager : MonoBehaviour
         WebServerIP = "http://" + GameObject.Find("Dropdown").GetComponent<DropDownMenu>().selectItem.text + ":8000";
         toggleDestroyScene = GameObject.Find("ToggleDestroyScene").GetComponent<Toggle>().isOn; // true - если удаляем прошлую сцену, false - оставляем
         GameObject.Find("Main Camera").GetComponent<VRButton>().MainCanvas.SetActive(false); // закрываем оба канваса
-        GameObject.Find("Main Camera").GetComponent<VRButton>().SetActiveButton.SetActive(false); // закрываем оба канваса
+        GameObject.Find("Main Camera").GetComponent<VRButton>().IPCanvas.SetActive(false); // закрываем оба канваса
 
         StartCoroutine("NewIPCoroutine");
 
@@ -756,7 +778,8 @@ public class ARSceneMakingManager : MonoBehaviour
         }
         yield return new WaitForSeconds(1f);
         Init();
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
+        RadarogramWereFound = false; // через 2 секунды ищем все радарограммы
     }
 
     public void DeleteSceneButton()
@@ -783,33 +806,44 @@ public class ARSceneMakingManager : MonoBehaviour
 
     private void OculusHandController() // обработка VR контроллеров, которые в руках
     {
+        // ПРАВЫЙ КОНТРОЛЛЕР (инициализация)
         var rightHandDevices = new List<UnityEngine.XR.InputDevice>();
         UnityEngine.XR.InputDevices.GetDevicesAtXRNode(UnityEngine.XR.XRNode.RightHand, rightHandDevices);
-
         if(rightHandDevices.Count == 1)
         {
             RightDevice = rightHandDevices[0];
             //Debug.Log(string.Format("Device name '{0}' with role '{1}'", device.name, device.role.ToString()));
         }
 
+        // Если был нажат стик - открыть меню canvas
         bool triggerRightValue;
         if (RightDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxisClick , out triggerRightValue) && triggerRightValue)
         {
-            //TextLog.text =  "Trigger button is pressed.";
             if(button_ban == false)
             {
-                CanvasMenuActive = !CanvasMenuActive;
-                CanvasMenu.SetActive(CanvasMenuActive);
-                StartCoroutine("Button_BAN_05sec");
+                if(VRButton.IPCanvas.activeSelf == false) // Если канвас выбора IP не открыт
+                {
+                    CanvasMenuActive = !CanvasMenuActive;
+                    CanvasMenu.SetActive(CanvasMenuActive);
+                    StartCoroutine("Button_BAN_05sec");
+                }
+                else
+                {
+                    CanvasMenuActive = !CanvasMenuActive;
+                    VRButton.IPCanvas.SetActive(false);
+                    StartCoroutine("Button_BAN_05sec");
+                }
             }
         }
 
+        // Если была нажата кнопка А - скрывать в порядке возрастания
         if (RightDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton , out triggerRightValue) && triggerRightValue)
         {
             if(button_ban == false)
             {
+                StartCoroutine("Button_BAN_03sec");
                 // скрыть в порядке возрастания
-                if(RadarogramWereFound == false) FindRadarogram();
+                //if(RadarogramWereFound == false) FindRadarogram();
                 for(int i = 1; i < 11; i++)
                 {
                     if(RGArray[i] != null) //если такая радарограмма вообще существует
@@ -817,57 +851,131 @@ public class ARSceneMakingManager : MonoBehaviour
                         if(RGActiveArray[i] == true)
                         {
                             RGActiveArray[i] = false;
+                            VRButton.RGActiveArray[i] = false; // также меняем в другом скрипте для синхронизации разных способов скрытия
                             RGArray[i].SetActive(RGActiveArray[i]);
+                            
+                            hiddenRadarograms.Remove(Int32.Parse(RGArray[i].name.Substring(17))); // удаляю объект из списка для синхронизации со скрытием через trigger
+
+                            if (TextHR[i].GetComponent<Text>().text == "Скрыть " + i.ToString())
+                            {
+                                TextHR[i].GetComponent<Text>().text = "Отобр. " + i.ToString();
+                            }
+                            else if (TextHR[i].GetComponent<Text>().text == "Отобр. " + i.ToString())
+                            {
+                                TextHR[i].GetComponent<Text>().text = "Скрыть " + i.ToString();
+                            }
+
                             break;
                         }
                     }
                 }
-                StartCoroutine("Button_BAN_03sec");
+                // StartCoroutine("Button_BAN_03sec");
             }
         }
 
+        // Если была нажата кнопка B - отображать в порядке убывания
         if (RightDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton , out triggerRightValue) && triggerRightValue)
         {
             if(button_ban == false)
             {
+                StartCoroutine("Button_BAN_03sec");
+                //TextLog.text += "1t ";
                 // показывать в порядке убывания
-                if(RadarogramWereFound == false) FindRadarogram();
+                //if(RadarogramWereFound == false) FindRadarogram();
                 for(int i = 10; i > 0; i--)
                 {
+                    //TextLog.text += "2t" + "[" + i.ToString() + "] ";
                     if(RGArray[i] != null) //если такая радарограмма вообще существует
                     {
+                        //TextLog.text += "3t" + "[" + i.ToString() + "] ";
                         if(RGActiveArray[i] == false)
                         {
+                            //TextLog.text += "4t" + "[" + i.ToString() + "] ";
                             RGActiveArray[i] = true;
+                            //TextLog.text += "5t" + "[" + i.ToString() + "] ";
+                            VRButton.RGActiveArray[i] = true; // также меняем в другом скрипте для синхронизации разных способов скрытия
+                            //TextLog.text += "6t" + "[" + i.ToString() + "] ";
                             RGArray[i].SetActive(RGActiveArray[i]);
+                            //TextLog.text += "7t" + "[" + i.ToString() + "] ";
+                            hiddenRadarograms.Remove(Int32.Parse(RGArray[i].name.Substring(17))); // удаляю объект из списка для синхронизации со скрытием через trigger
+
+                            if (TextHR[i].GetComponent<Text>().text == "Скрыть " + i.ToString())
+                            {
+                                TextHR[i].GetComponent<Text>().text = "Отобр. " + i.ToString();
+                            }
+                            else if (TextHR[i].GetComponent<Text>().text == "Отобр. " + i.ToString())
+                            {
+                                TextHR[i].GetComponent<Text>().text = "Скрыть " + i.ToString();
+                            }
+                            //TextLog.text += "8t" + "[" + i.ToString() + "] ";
+
                             break;
                         }
                     }
                 }
-                StartCoroutine("Button_BAN_03sec");
+                // StartCoroutine("Button_BAN_03sec");
             }
         }
 
+        // Если был нажат Trigger - отобразить в обратном порядке по списка hiddenRadarograms
+        if (RightDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out triggerRightValue) && triggerRightValue)
+        {
+            if(button_ban == false)
+            {
+                StartCoroutine("Button_BAN_03sec");
+                hiddenRadarograms.Reverse();
+                // foreach (var item in hiddenRadarograms)
+                // {
+                //     TextLog.text += item;
+                // }
+                //GameObject.Find(hiddenRadarograms[0]).SetActive(true);
+                RGArray[hiddenRadarograms[0]].SetActive(true);
 
+                RGActiveArray[hiddenRadarograms[0]] = true; // меняем в другом скрипте для синхронизации разных способов скрытия
+                VRButton.RGActiveArray[hiddenRadarograms[0]] = true; // меняем в другом скрипте для синхронизации разных способов скрытия
 
+                if (TextHR[hiddenRadarograms[0]].GetComponent<Text>().text == "Скрыть " + hiddenRadarograms[0].ToString())
+                {
+                    TextHR[hiddenRadarograms[0]].GetComponent<Text>().text = "Отобр. " + hiddenRadarograms[0].ToString();
+                }
+                else if (TextHR[hiddenRadarograms[0]].GetComponent<Text>().text == "Отобр. " + hiddenRadarograms[0].ToString())
+                {
+                    TextHR[hiddenRadarograms[0]].GetComponent<Text>().text = "Скрыть " + hiddenRadarograms[0].ToString();
+                }
+
+                hiddenRadarograms.Remove(hiddenRadarograms[0]);
+                hiddenRadarograms.Reverse();
+            }
+        }
+
+        
+        // ЛЕВЫЙ КОНТРОЛЛЕР (инициализация)
         var leftHandDevices = new List<UnityEngine.XR.InputDevice>();
         UnityEngine.XR.InputDevices.GetDevicesAtXRNode(UnityEngine.XR.XRNode.LeftHand, leftHandDevices);
-
         if(leftHandDevices.Count == 1)
         {
             LeftDevice = leftHandDevices[0];
             //Debug.Log(string.Format("Device name '{0}' with role '{1}'", device.name, device.role.ToString()));
         }
 
+        // если был нажат стик - открыть меню canvas
         bool triggerLeftValue;
         if (LeftDevice.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxisClick , out triggerLeftValue) && triggerLeftValue)
         {
-            //TextLog.text =  "Trigger button is pressed.";
             if(button_ban == false)
             {
-                CanvasMenuActive = !CanvasMenuActive;
-                CanvasMenu.SetActive(CanvasMenuActive);
-                StartCoroutine("Button_BAN_05sec");
+                if(VRButton.IPCanvas.activeSelf == false) // Если канвас выбора IP не открыт
+                {
+                    CanvasMenuActive = !CanvasMenuActive;
+                    CanvasMenu.SetActive(CanvasMenuActive);
+                    StartCoroutine("Button_BAN_05sec");
+                }
+                else
+                {
+                    CanvasMenuActive = !CanvasMenuActive;
+                    VRButton.IPCanvas.SetActive(false);
+                    StartCoroutine("Button_BAN_05sec");
+                }
             }
         }
     }
@@ -881,6 +989,7 @@ public class ARSceneMakingManager : MonoBehaviour
     IEnumerator Button_BAN_03sec() // баним нажатие на кнопку trigger на 0.3 секунды, чтобы не нажималось много раз (костыль, пока не пойму как правильно)
     {
         button_ban = true;
+        //TextLog.text = "";
         yield return new WaitForSeconds(0.3f);
         button_ban = false;
     }
@@ -906,11 +1015,19 @@ public class ARSceneMakingManager : MonoBehaviour
             RGArray[i] = GameObject.Find("radarogramPrefab_" + i.ToString());
             if(RGArray[i] != null)
             {
+                //TextLog.text += "нашёл!" + i.ToString() + " ";
+                RGActiveArray[i] = true;
                 //TextLog.text = "нашёл радарограмму " + i.ToString();
                 RadarogramWereFound = true;
             }
+            else
+            {
+                //TextLog.text += "НЕ НАШЕЛ!" + i.ToString() + " ";
+            }
         }
+        VRButton.FindRadarogram();
     }
+
 
 
 

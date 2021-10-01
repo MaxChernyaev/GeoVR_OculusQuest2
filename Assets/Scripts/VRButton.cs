@@ -6,227 +6,252 @@ using System.IO;
 
 public class VRButton : MonoBehaviour
 {
-    GameObject RG1, RG2, RG3, RG4, RG5, RG6, RG7, RG8, RG9, RG10;
+    // GameObject RG1, RG2, RG3, RG4, RG5, RG6, RG7, RG8, RG9, RG10;
 
-    private bool RG1Active = true;
-    private bool RG2Active = true;
-    private bool RG3Active = true;
-    private bool RG4Active = true;
-    private bool RG5Active = true;
-    private bool RG6Active = true;
-    private bool RG7Active = true;
-    private bool RG8Active = true;
-    private bool RG9Active = true;
-    private bool RG10Active = true;
-    private bool test = false;
+    // массив самих объектов - радарограмм
+    public GameObject[] RGArray = new GameObject[11]; // используется с 1 до 10
+    
+    // массив флагов активности радарограмм
+    public bool[] RGActiveArray = new bool[11]; // используется с 1 до 10
+
+    // флаг, указывающий на то, что радарограммы были найдены
+    public bool RadarogramWereFound = false;
+
+    // объект ARSceneMakingManager, управляющий основной логикой. Будем в нём менять переменную активности радарограмм для синхронизации разных способов скрытия
+    private ARSceneMakingManager ARSceneMakingManager;
+
+    // private bool RG1Active = true;
+    // private bool RG2Active = true;
+    // private bool RG3Active = true;
+    // private bool RG4Active = true;
+    // private bool RG5Active = true;
+    // private bool RG6Active = true;
+    // private bool RG7Active = true;
+    // private bool RG8Active = true;
+    // private bool RG9Active = true;
+    // private bool RG10Active = true;
+    // private bool test = false;
     JsonRadarogramReader.CommonData myJsonRadarogramData;
     [SerializeField] private GameObject textPanel;
-
-    [SerializeField] public GameObject SetActiveButton;
+    [SerializeField] private Text TextLog;  // лог на VRcanvas
+    [SerializeField] public GameObject IPCanvas;
     [SerializeField] public GameObject MainCanvas;
+    [SerializeField] public GameObject[] TextHR;
 
     public bool buttonActive = false;
     void Start()
     {
+        ARSceneMakingManager = GameObject.Find("XR Rig").GetComponent<ARSceneMakingManager>();
         //FindRadarogram();
         MainCanvas.SetActive(false);
-        SetActiveButton.SetActive(false);
+        IPCanvas.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(RadarogramWereFound == false) FindRadarogram();
     }
 
     public void HideRadarogram1() // скрытие радарограмм
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG1Active = !RG1Active;
-        RG1.SetActive(RG1Active);
+        // TextLog.text = "RGActiveArray[1] :" + RGActiveArray[1].ToString();
+        RGActiveArray[1] = !RGActiveArray[1];
+        ARSceneMakingManager.RGActiveArray[1] = RGActiveArray[1]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[1].SetActive(RGActiveArray[1]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR1").GetComponent<Text>().text == "Скрыть 1")
+        if (TextHR[1].GetComponent<Text>().text == "Скрыть 1")
         {
-            transform.Find("TextHR1").GetComponent<Text>().text = "Отобр. 1";
+            TextHR[1].GetComponent<Text>().text = "Отобр. 1";
         }
-        else if (transform.Find("TextHR1").GetComponent<Text>().text == "Отобр. 1")
+        else if (TextHR[1].GetComponent<Text>().text == "Отобр. 1")
         {
-            transform.Find("TextHR1").GetComponent<Text>().text = "Скрыть 1";
+            TextHR[1].GetComponent<Text>().text = "Скрыть 1";
         }
     }
     public void HideRadarogram2()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG2Active = !RG2Active;
-        RG2.SetActive(RG2Active);
+        RGActiveArray[2] = !RGActiveArray[2];
+        ARSceneMakingManager.RGActiveArray[2] = RGActiveArray[2]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[2].SetActive(RGActiveArray[2]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR2").GetComponent<Text>().text == "Скрыть 2")
+        if (TextHR[2].GetComponent<Text>().text == "Скрыть 2")
         {
-            transform.Find("TextHR2").GetComponent<Text>().text = "Отобр. 2";
+            TextHR[2].GetComponent<Text>().text = "Отобр. 2";
         }
-        else if (transform.Find("TextHR2").GetComponent<Text>().text == "Отобр. 2")
+        else if (TextHR[2].GetComponent<Text>().text == "Отобр. 2")
         {
-            transform.Find("TextHR2").GetComponent<Text>().text = "Скрыть 2";
+            TextHR[2].GetComponent<Text>().text = "Скрыть 2";
         }
     }
     public void HideRadarogram3()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG3Active = !RG3Active;
-        RG3.SetActive(RG3Active);
+        RGActiveArray[3] = !RGActiveArray[3];
+        ARSceneMakingManager.RGActiveArray[3] = RGActiveArray[3]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[3].SetActive(RGActiveArray[3]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR3").GetComponent<Text>().text == "Скрыть 3")
+        if (TextHR[3].GetComponent<Text>().text == "Скрыть 3")
         {
-            transform.Find("TextHR3").GetComponent<Text>().text = "Отобр. 3";
+            TextHR[3].GetComponent<Text>().text = "Отобр. 3";
         }
-        else if (transform.Find("TextHR3").GetComponent<Text>().text == "Отобр. 3")
+        else if (TextHR[3].GetComponent<Text>().text == "Отобр. 3")
         {
-            transform.Find("TextHR3").GetComponent<Text>().text = "Скрыть 3";
+            TextHR[3].GetComponent<Text>().text = "Скрыть 3";
         }
     }
     public void HideRadarogram4()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG4Active = !RG4Active;
-        RG4.SetActive(RG4Active);
+        RGActiveArray[4] = !RGActiveArray[4];
+        ARSceneMakingManager.RGActiveArray[4] = RGActiveArray[4]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[4].SetActive(RGActiveArray[4]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR4").GetComponent<Text>().text == "Скрыть 4")
+        if (TextHR[4].GetComponent<Text>().text == "Скрыть 4")
         {
-            transform.Find("TextHR4").GetComponent<Text>().text = "Отобр. 4";
+            TextHR[4].GetComponent<Text>().text = "Отобр. 4";
         }
-        else if (transform.Find("TextHR4").GetComponent<Text>().text == "Отобр. 4")
+        else if (TextHR[4].GetComponent<Text>().text == "Отобр. 4")
         {
-            transform.Find("TextHR4").GetComponent<Text>().text = "Скрыть 4";
+            TextHR[4].GetComponent<Text>().text = "Скрыть 4";
         }
     }
     public void HideRadarogram5()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG5Active = !RG5Active;
-        RG5.SetActive(RG5Active);
+        RGActiveArray[5] = !RGActiveArray[5];
+        ARSceneMakingManager.RGActiveArray[5] = RGActiveArray[5]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[5].SetActive(RGActiveArray[5]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR5").GetComponent<Text>().text == "Скрыть 5")
+        if (TextHR[5].GetComponent<Text>().text == "Скрыть 5")
         {
-            transform.Find("TextHR5").GetComponent<Text>().text = "Отобр. 5";
+            TextHR[5].GetComponent<Text>().text = "Отобр. 5";
         }
-        else if (transform.Find("TextHR5").GetComponent<Text>().text == "Отобр. 5")
+        else if (TextHR[5].GetComponent<Text>().text == "Отобр. 5")
         {
-            transform.Find("TextHR5").GetComponent<Text>().text = "Скрыть 5";
+            TextHR[5].GetComponent<Text>().text = "Скрыть 5";
         }
     }
     public void HideRadarogram6()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG6Active = !RG6Active;
-        RG6.SetActive(RG6Active);
+        RGActiveArray[6] = !RGActiveArray[6];
+        ARSceneMakingManager.RGActiveArray[6] = RGActiveArray[6]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[6].SetActive(RGActiveArray[6]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR6").GetComponent<Text>().text == "Скрыть 6")
+        if (TextHR[6].GetComponent<Text>().text == "Скрыть 6")
         {
-            transform.Find("TextHR6").GetComponent<Text>().text = "Отобр. 6";
+            TextHR[6].GetComponent<Text>().text = "Отобр. 6";
         }
-        else if (transform.Find("TextHR6").GetComponent<Text>().text == "Отобр. 6")
+        else if (TextHR[6].GetComponent<Text>().text == "Отобр. 6")
         {
-            transform.Find("TextHR6").GetComponent<Text>().text = "Скрыть 6";
+            TextHR[6].GetComponent<Text>().text = "Скрыть 6";
         }
     }
     public void HideRadarogram7()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG7Active = !RG7Active;
-        RG7.SetActive(RG7Active);
+        RGActiveArray[7] = !RGActiveArray[7];
+        ARSceneMakingManager.RGActiveArray[7] = RGActiveArray[7]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[7].SetActive(RGActiveArray[7]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR7").GetComponent<Text>().text == "Скрыть 7")
+        if (TextHR[7].GetComponent<Text>().text == "Скрыть 7")
         {
-            transform.Find("TextHR7").GetComponent<Text>().text = "Отобр. 7";
+            TextHR[7].GetComponent<Text>().text = "Отобр. 7";
         }
-        else if (transform.Find("TextHR7").GetComponent<Text>().text == "Отобр. 7")
+        else if (TextHR[7].GetComponent<Text>().text == "Отобр. 7")
         {
-            transform.Find("TextHR7").GetComponent<Text>().text = "Скрыть 7";
+            TextHR[7].GetComponent<Text>().text = "Скрыть 7";
         }
     }
     public void HideRadarogram8()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG8Active = !RG8Active;
-        RG8.SetActive(RG8Active);
+        RGActiveArray[8] = !RGActiveArray[8];
+        ARSceneMakingManager.RGActiveArray[8] = RGActiveArray[8]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[8].SetActive(RGActiveArray[8]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR8").GetComponent<Text>().text == "Скрыть 8")
+        if (TextHR[8].GetComponent<Text>().text == "Скрыть 8")
         {
-            transform.Find("TextHR8").GetComponent<Text>().text = "Отобр. 8";
+            TextHR[8].GetComponent<Text>().text = "Отобр. 8";
         }
-        else if (transform.Find("TextHR8").GetComponent<Text>().text == "Отобр. 8")
+        else if (TextHR[8].GetComponent<Text>().text == "Отобр. 8")
         {
-            transform.Find("TextHR8").GetComponent<Text>().text = "Скрыть 8";
+            TextHR[8].GetComponent<Text>().text = "Скрыть 8";
         }
     }
     public void HideRadarogram9()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG9Active = !RG9Active;
-        RG9.SetActive(RG9Active);
+        RGActiveArray[9] = !RGActiveArray[9];
+        ARSceneMakingManager.RGActiveArray[9] = RGActiveArray[9]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[9].SetActive(RGActiveArray[9]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR9").GetComponent<Text>().text == "Скрыть 9")
+        if (TextHR[9].GetComponent<Text>().text == "Скрыть 9")
         {
-            transform.Find("TextHR9").GetComponent<Text>().text = "Отобр. 9";
+            TextHR[9].GetComponent<Text>().text = "Отобр. 9";
         }
-        else if (transform.Find("TextHR9").GetComponent<Text>().text == "Отобр. 9")
+        else if (TextHR[9].GetComponent<Text>().text == "Отобр. 9")
         {
-            transform.Find("TextHR9").GetComponent<Text>().text = "Скрыть 9";
+            TextHR[9].GetComponent<Text>().text = "Скрыть 9";
         }
     }
     public void HideRadarogram10()
     {
-        if(test == false)
+        if(RadarogramWereFound == false)
         {
-            //Debug.Log("test == false");
+            //Debug.Log("RadarogramWereFound == false");
             FindRadarogram();
         }
-        RG10Active = !RG10Active;
-        RG10.SetActive(RG10Active);
+        RGActiveArray[10] = !RGActiveArray[10];
+        ARSceneMakingManager.RGActiveArray[10] = RGActiveArray[10]; // также меняем в другом скрипте для синхронизации разных способов скрытия
+        RGArray[10].SetActive(RGActiveArray[10]);
         //GameObject.Find("radarogramPrefab_" + transform.parent.Find("Number").GetComponent<TextMesh>().text).SetActive(false);
-        if (transform.Find("TextHR10").GetComponent<Text>().text == "Скрыть 10")
+        if (TextHR[10].GetComponent<Text>().text == "Скрыть 10")
         {
-            transform.Find("TextHR10").GetComponent<Text>().text = "Отобр. 10";
+            TextHR[10].GetComponent<Text>().text = "Отобр. 10";
         }
-        else if (transform.Find("TextHR10").GetComponent<Text>().text == "Отобр. 10")
+        else if (TextHR[10].GetComponent<Text>().text == "Отобр. 10")
         {
-            transform.Find("TextHR10").GetComponent<Text>().text = "Скрыть 10";
+            TextHR[10].GetComponent<Text>().text = "Скрыть 10";
         }
     }
 
@@ -234,9 +259,10 @@ public class VRButton : MonoBehaviour
     {
         // если доп. канвас с выбором IP открылся, то основной закрылся. И наоборот
         buttonActive = !buttonActive;
-        SetActiveButton.SetActive(buttonActive);
+        IPCanvas.SetActive(buttonActive);
         MainCanvas.SetActive(!buttonActive);
-        GameObject.Find("Dropdown").GetComponent<DropDownMenu>().UpdateDropDown(); // обновляю выпадающий список
+        RadarogramWereFound = false;
+        //GameObject.Find("Dropdown").GetComponent<DropDownMenu>().UpdateDropDown(); // обновляю выпадающий список
     }
 
     public void SaveScene()
@@ -299,19 +325,34 @@ public class VRButton : MonoBehaviour
         //ScreenCapture.CaptureScreenshot(Application.persistentDataPath + "/скриншот");
     }
 
-    private void FindRadarogram()
-    {
-        test = true;
-        RG1 =  GameObject.Find("radarogramPrefab_1");
-        RG2 =  GameObject.Find("radarogramPrefab_2");
-        RG3 =  GameObject.Find("radarogramPrefab_3");
-        RG4 =  GameObject.Find("radarogramPrefab_4");
-        RG5 =  GameObject.Find("radarogramPrefab_5");
-        RG6 =  GameObject.Find("radarogramPrefab_6");
-        RG7 =  GameObject.Find("radarogramPrefab_7");
-        RG8 =  GameObject.Find("radarogramPrefab_8");
-        RG9 =  GameObject.Find("radarogramPrefab_9");
-        RG10 =  GameObject.Find("radarogramPrefab_10");
+    // private void FindRadarogram()
+    // {
+    //     test = true;
+    //     RG1 =  GameObject.Find("radarogramPrefab_1");
+    //     RG2 =  GameObject.Find("radarogramPrefab_2");
+    //     RG3 =  GameObject.Find("radarogramPrefab_3");
+    //     RG4 =  GameObject.Find("radarogramPrefab_4");
+    //     RG5 =  GameObject.Find("radarogramPrefab_5");
+    //     RG6 =  GameObject.Find("radarogramPrefab_6");
+    //     RG7 =  GameObject.Find("radarogramPrefab_7");
+    //     RG8 =  GameObject.Find("radarogramPrefab_8");
+    //     RG9 =  GameObject.Find("radarogramPrefab_9");
+    //     RG10 =  GameObject.Find("radarogramPrefab_10");
 
+    // }
+
+    public void FindRadarogram()
+    {
+        for(int i = 1; i < 11; i++)
+        {
+            // TextLog.text = "попытка найти " + i.ToString();
+            RGArray[i] = GameObject.Find("radarogramPrefab_" + i.ToString());
+            if(RGArray[i] != null)
+            {
+                RGActiveArray[i] = true;
+                //TextLog.text = "нашёл радарограмму " + i.ToString();
+                RadarogramWereFound = true;
+            }
+        }
     }
 }
